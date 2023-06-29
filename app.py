@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, flash, session, url_for
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.exc import SQLAlchemyError
 import hashlib 
 from datetime import datetime 
 
@@ -26,7 +27,6 @@ def login():
         app.logger.debug("Login else final")
         if rol == 'preceptor':
           actual = Preceptor.query.filter_by(correo=correo).first()
-          #actual = db.session.query(Preceptor).filter(Preceptor.correo==correo).first()
           if actual is not None and actual.clave == result:
             session['user_id'] = actual.id
             session['user_type'] = 'Preceptor'
@@ -57,32 +57,52 @@ def home():
 def reg_asist():
     if request.method == 'POST':
         if "cursos" not in request.form:
-            return render_template('asistencia.html', cursos=Curso.query.filter_by(idpreceptor=session.get('user_id')), curso_selec=None)
-        else:
+            return render_template('asistencia.html', cursos=Curso.query.filter_by(idpreceptor=session.get('user_id')), curso=None)
+        elif "asistencia[]" not in request.form:
+            c = Curso.query.filter_by(id=request.form['cursos']).first()
+            
+            return render_template('asistencia.html', cursos = Curso.query.filter_by(idpreceptor=session.get('user_id')), curso=c)
+        print('hola')
+        if "asistencia[]" in request.form:
+          try:
             c = Curso.query.filter_by(id=request.form['cursos']).first()
             clase = int(request.form['clase'])
-            fecha = datetime.strptime(request.form['fecha'], "%Y-%m-%d").date()
-            c.estudiantes.sort()
-            for estudiante in c.estudiantes:
-                if request.form['asistencia']:
-                    if request.form['asistencia'] == 'n':
-                        asistencia = 'n'
+            if request.form['fecha'] and c:
+              app.logger.debug('Primer IF')
+              fecha = datetime.strptime(request.form['fecha'], "%Y-%m-%d").date()
+              c.estudiantes.sort()
+              i = 0
+              asistencia = request.form.getlist('asistencia[]')
+              justificaciones = request.form.getlist('justificacion[]')
+              for estudiante in c.estudiantes:
+                    app.logger.debug('FOR')
+                    app.logger.debug(request.form)
+                    app.logger.debug('Segundo IF')
+                    if asistencia[i] == 'n':
+                        asistenciaA = 'n'
                     else:
-                        asistencia = 's'
-                    justificacion = request.form['justificacion']
+                        asistenciaA = 's'
+                    justificacion = justificaciones[i]
                     registro_asistencia = Asistencia(
-                        fecha=datetime.strptime(fecha, "%Y-%m-%d").date(),
+                        fecha=fecha,
                         codigoclase=clase,
-                        asistio=asistencia,
-                        justificacion=justificacion if asistencia == False else '',
+                        asistio=asistenciaA,
+                        justificacion=justificacion if asistencia[i] == 'n' else '',
                         idestudiante=estudiante.id
                     )
+                    app.logger.debug('PreCommit asistencia')
                     db.session.add(registro_asistencia)
-                    db.session.commit()
-        return render_template('asistencia.html')
-            
-    else:
-       return render_template('asistencia.html', cursos=Curso.query.filter_by(idpreceptor=session.get('user_id')), curso_selec=None)
+                    i+=1
+              db.session.commit()
+              app.logger.debug('PostCommit asistencia')
+            return render_template('asistencia.html', cursos = Curso.query.filter_by(idpreceptor=session.get('user_id')), curso=c)
+          except SQLAlchemyError as e:
+            db.session.rollback()            
+            error = str(e)
+            app.logger.debug(error)
+            return render_template('asistencia.html', cursos=Curso.query.filter_by(idpreceptor=session.get('user_id')), curso=None, error=error)
+
+    return render_template('asistencia.html', cursos=Curso.query.filter_by(idpreceptor=session.get('user_id')), curso=None)
 
 
 
@@ -90,7 +110,7 @@ def reg_asist():
 def list_curso():
   if request.method=='POST':
     if not request.form['cursos'] :
-      return render_template('list_date_asis.html',cursos=Curso.query.filter_by(idpreceptor==session.get('user_id')))
+      return render_template('list_date_asis.html',cursos=Curso.query.filter_by(idpreceptor= session.get('user_id')))
     else:
       fecha= datetime.strptime(request.form['fecha'], "%Y-%m-%d").date()
       curso=Curso.query.filter_by(id=request.form['cursos']).first()
@@ -108,29 +128,28 @@ def list_curso():
       return render_template('list_date_asis.html',lista=lista,cursos=None)
   else:
     return render_template('list_date_asis.html',cursos=Curso.query.filter_by(idpreceptor=session.get('user_id')))
-  
+
 
 @app.route('/list_detalle', methods = ['GET', 'POST'])
 def list_detalle():
   if request.method == 'POST':
     if not request.form['curso_id']:
-      return render_template('list_detalle.html', cursos = Curso.query.filter_by(idpreceptor==session.get('user_id')), curso = None)
+      return render_template('list_detalle.html', cursos=Curso.query.filter_by(idpreceptor= session.get('user_id')), curso = None)
     else:
       curso = Curso.query.get(request.form['curso_id'])
       curso.estudiantes.sort()
       lista = []
       for estudiante in curso.estudiantes:
         id = estudiante.id
-        asistencia = Asistencia.query.filter_by(idestudiante = id)
-        if asistencia:
-          aulaP = 0
-          aulaJ = 0
-          aulaI = 0
-          efP = 0
-          efJ = 0
-          efI = 0
-          for a in  asistencia:
-            if a.codigoclase == 1:
+        asistencia_aula = Asistencia.query.filter_by(idestudiante=id, codigoclase=1).all()
+        asistencia_ef = Asistencia.query.filter_by(idestudiante=id, codigoclase=2).all()
+        aulaP = 0
+        aulaJ = 0
+        aulaI = 0
+        efP = 0
+        efJ = 0
+        efI = 0
+        for a in  asistencia_aula:
               if a.asistio == 's':
                 aulaP += 1
               elif a.asistio == 'n':
@@ -138,26 +157,26 @@ def list_detalle():
                   aulaJ += 1
                 else:
                   aulaI += 1
-            elif a.codigoclase == 2:
-              if a.asistio == True:
+        for a in asistencia_ef:
+              if a.asistio == 's':
                 efP += 1
-              elif a.asistio == False:
+              elif a.asistio == 'n':
                 if a.justificacion is not None:
                   efJ += 1
                 else:
                   efI += 1
-            total = aulaI + aulaJ +(efI / 2) + (efJ/2)
-          lista.append({
-            'apellido':estudiante.apellido,
-            'nombre': estudiante.nombre,
-            'aulaP': aulaP,
-            'aulaJ': aulaJ,
-            'aulaI': aulaI,
-            'efP': efP,
-            'efJ': efJ,
-            'efI': efI,
-            'total': total
-          })
+        total = aulaI + aulaJ +(efI / 2) + (efJ/2)
+        lista.append({
+                'apellido':estudiante.apellido,
+                'nombre': estudiante.nombre,
+                'aulaP': aulaP,
+                'aulaJ': aulaJ,
+                'aulaI': aulaI,
+                'efP': efP,
+                'efJ': efJ,
+                'efI': efI,
+                'total': total
+              })
       return render_template('list_detalle.html', cursos = None, curso = curso, preceptor = session.get('user_id'), lista = lista)
 
   else:
@@ -172,16 +191,29 @@ def inasis_estudiante():
       lista = []
       estudiante = Estudiante.query.filter_by(dni = request.form['dni']).first()
       if estudiante is not None:
-        asistencias = Asistencia.query.filter(Asistencia.idestudiante == estudiante.id)
+        id = estudiante.id
+        asistencia_aula = Asistencia.query.filter_by(idestudiante=id, codigoclase=1).all()
+        asistencia_ef = Asistencia.query.filter_by(idestudiante=id, codigoclase=2).all()
         total = 0
         
-        for a in asistencias:
+        for a in asistencia_aula:
           if a.asistio=='n':
-            just = a.justificacion 
-            if a.codigoclase == 1:
-              total += 1
-            elif a.codigoclase == 2:
-              total += 0.5
+            just = a.justificacion
+            total += 1
+            
+            app.logger.debug(f'Fecha: {a.fecha}')
+            app.logger.debug(f'Tipo de clase: {a.codigoclase}')
+            app.logger.debug(f'Justificación: {just}')
+              
+            lista.append({
+              'fecha': a.fecha,
+              'tipo': a.codigoclase,
+              'justificacion': just,
+            })
+        for a in asistencia_ef:
+          if a.asistio=='n':
+            just = a.justificacion
+            total += 1
             app.logger.debug(f'Fecha: {a.fecha}')
             app.logger.debug(f'Tipo de clase: {a.codigoclase}')
             app.logger.debug(f'Justificación: {just}')
@@ -204,5 +236,6 @@ def inasis_estudiante():
 if __name__ == "__main__":
   with app.app_context():
     db.create_all()
+    app.config['SQLALCHEMY_ECHO'] = True
     app.run(host='0.0.0.0', port=8080, debug = True)
 
