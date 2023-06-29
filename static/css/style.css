@@ -30,6 +30,48 @@ table {
     border-collapse: collapse;
     border: 2px solid rgb(200, 200, 200);
     letter-spacing: 1px;
-    font-family: sans-serif;
+    font-family: Helvetica, sans-serif;
     font-size: 0.8rem;
+}
+.Titulo{
+    font-family: Helvetica, sans-serif;
+    font-style: bold;
+    font-weight: 500;
+    font-size: 2.2rem;
+    line-height: 48px;
+    letter-spacing: 0.04em;
+}
+.linkheader{
+    font-family: Helvetica, sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 1.2rem;
+    line-height: 30px;
+}
+.Subtitulo1 {
+    font-family: Helvetica, sans-serif;
+    font-style: bold;
+    font-weight: 540;
+    font-size: 2rem;
+    line-height: 43px;
+    letter-spacing: 0.04em;
+    margin-bottom: 1rem;
+}
+.Subtitulo2 {
+    font-family: Helvetica, sans-serif;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 1.5rem;
+    line-height: 24px;
+}
+.Texto1 {
+    font-family: Helvetica, sans-serif;
+    font-style: light;
+    font-weight: 300;
+    font-size: 1rem;
+    line-height: 25px;
+    letter-spacing: 0.06em;
+    text-align: center;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
 }
