@@ -3,31 +3,33 @@
 {% block content %}
   <h1>Listado de inasistencias</h1>
   <hr>
-  <form action="{{ request.path }}" method = "POST" class = "container-fluid">
+  <form action="{{ request.path }}" method = "POST" class = "container-fluid text-center">
     
     {% if estudiantes :%}
-      <label for="dni">DNI</label> <br>
-      <input name="dni" id="dni">
-        <br><br>
-  
-        <input type="submit" value = "Buscar DNI">
+      <div class="row g-2 align-items-center" style="margin: 0 30rem;">
+        <div class="col-sm">
+          <label for="dni" class="col-form-label Subtitulo2">DNI</label> <br>
+          <input name="dni" id="dni" class="form-control form-control-sm">
+          <input type="submit" value = "Buscar DNI"  class="btn btn-outline-secondary form-control-sm" style="margin: 2rem;">
+        </div>
+      </div>
     {% else: %}
       <h3>Inasistencias del alumno {{ estudiante.apellido }} {{ estudiante.nombre }}:</h3>
-      <div class="conteiner-fluid">
+      <div class="conteiner-fluid" style="margin: 0.5rem 2rem;">
           <table class="table">
             <thead>
               <tr>
-                <th scope="col">Fecha</th>
-                <th scope="col">Tipo de clase</th>
-                <th scope="col">Justificacion</th>
+                <th scope="col" class="Subtitulo2" style="color: #80a22e;">Fecha</th>
+                <th scope="col" class="Subtitulo2" style="color: #80a22e;">Tipo de clase</th>
+                <th scope="col" class="Subtitulo2" style="color: #80a22e;">Justificacion</th>
               </tr>
             </thead>
             <tbody>
               {% for e in lista %}
                 <tr>
-                  <td>{{ e['fecha'] }}</td>
-                  <td>{{ e['tipo'] }}</td>
-                  <td>{{ e['justificacion'] }}</td>
+                  <td class="Texto1">{{ e['fecha'] }}</td>
+                  <td class="Texto1">{{ e['tipo'] }}</td>
+                  <td class="Texto1">{{ e['justificacion'] }}</td>
                 </tr>
               {% endfor %}
             </tbody>
