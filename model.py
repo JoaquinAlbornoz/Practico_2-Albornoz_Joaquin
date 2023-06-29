@@ -1,5 +1,6 @@
 from __main__ import app
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 db=SQLAlchemy(app)
 
@@ -54,9 +55,9 @@ class Padre(db.Model):
 class Asistencia(db.Model):
   __tablename__='asistencia'
   id=db.Column(db.Integer,primary_key=True)
-  fecha=db.Column(db.DateTime,nullable=False)
+  fecha=db.Column(db.Date,default=datetime.utcnow,nullable=False)
   codigoclase=db.Column(db.Integer,nullable=False)
-  asistio=db.Column(db.Text, nullable=False)
-  justificacion=db.Column(db.String(150),nullable=False)
+  asistio=db.Column(db.Text)
+  justificacion=db.Column(db.String(150))
   idestudiante=db.Column(db.Integer,db.ForeignKey('estudiante.id'))
   
