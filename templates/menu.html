@@ -2,43 +2,43 @@
 {% block title %}Menu{% endblock %}
 {% block content %}
   {% if tipo=='Preceptor' %}
-    <div class="conteiner-fluid text-center">
+    <div class="conteiner-fluid text-center" style="margin-left: 1rem;margin-right: 1rem;">
       <div class="row d-flex justify-content-center">
         <div class="col align-self-center">
-          <h1>Seleccione Opcion</h1>
+          <h1 class="Subtitulo1" style="color: #80a22e;margin: 2rem;">¡Bienvenido!</h1>
         </div>
       </div>
-      <div class="row row-cols-1 row-cols-md-3 g-4">
-        <div class="col">
+      <div class="row row-cols-1 row-cols-sm-3 g-4" style="margin: 0 1rem;">
+        <div class="col" style="margin: 2rem 0;">
           <div class="card h-100">
             <div class="card-body justify-content-between">
               <div>
-                <h5 class="card-title">Registrar asistencia de un curso</h5>
-                <p class="card-text">Registrar la asistencia de todos los alumnos de un curso en una clase especifica.</p>
+                <h5 class="card-title Subtitulo2" style="color: #80a22e;">Registrar asistencia de un curso</h5>
+                <p class="card-text Texto1">Registrar la asistencia de todos los alumnos de un curso en una clase especifica.</p>
               </div>
-              <a type="button" class="btn btn-outline-secondary" href="{{ url_for('reg_asist') }}">Ir</a>
+              <a type="button" class="btn btn-outline-secondary" style="margin-top: 3rem;" href="{{ url_for('reg_asist') }}">Ir</a>
             </div>
           </div>
         </div>
-        <div class="col">
+        <div class="col" style="margin: 2rem 0;">
           <div class="card h-100">
             <div class="card-body justify-content-between">
               <div>
-                <h5 class="card-title">Informe detallado</h5>
-                <p class="card-text">Informe detallado de la cantidad de asistensias e inasistencias de cada alumno en ambas clases de un curso seleccionado.</p>
+                <h5 class="card-title Subtitulo2" style="color: #80a22e;">Informe detallado</h5>
+                <p class="card-text Texto1">Informe detallado de la cantidad de asistensias e inasistencias de cada alumno en ambas clases de un curso seleccionado.</p>
               </div>
-              <a type="button" class="btn btn-outline-secondary" href="{{ url_for('list_detalle') }}">Ir</a>
+              <a type="button" class="btn btn-outline-secondary" style="margin-top: 2rem;" href="{{ url_for('list_detalle') }}">Ir</a>
             </div>
           </div>
         </div>
-        <div class="col">
+        <div class="col" style="margin: 2rem 0;">
           <div class="card h-100">
             <div class="card-body justify-content-between">
               <div>
-                <h5 class="card-title">Asistencia a clase</h5>
-                <p class="card-text">Listado de asistencia de estudiantes para una clase de un curso seleccionado.</p>
+                <h5 class="card-title Subtitulo2" style="color: #80a22e;">Asistencia a clase</h5>
+                <p class="card-text Texto1">Listado de asistencia de estudiantes para una clase de un curso seleccionado.</p>
               </div>
-              <a type="button" class="btn btn-outline-secondary" href="{{ url_for('list_curso') }}">Ir</a>
+              <a type="button" class="btn btn-outline-secondary" style="margin-top: 3.7rem;" href="{{ url_for('list_curso') }}">Ir</a>
             </div>
           </div>
         </div>
@@ -48,13 +48,18 @@
     <div class="conteiner-fluid text-center">
       <div class="row d-flex justify-content-center">
         <div class="col align-self-center">
+          <h1 class="Subtitulo1" style="color: #80a22e;margin: 2rem;">¡Bienvenido!</h1>
+        </div>
+      </div>
+      <div class="row row-cols-1 row-cols-sm-3 g-4 justify-content-center">
+        <div class="col-sm align-self-center">
           <div class="card h-100">
             <div class="card-body justify-content-between">
               <div>
-                <h5 class="card-title">Consultar Inasistencias</h5>
-                <p class="card-text">Informe del estudiante, con asistencias e inasistencias por cada clase.</p>
+                <h5 class="card-title Subtitulo2" style="color: #80a22e;">Consultar Inasistencias</h5>
+                <p class="card-text Texto1">Informe del estudiante, con asistencias e inasistencias por cada clase.</p>
               </div>
-              <a type="button" class="btn btn-outline-secondary" href="{{ url_for('inasis_estudiante') }}">Ir</a>
+              <a type="button" class="btn btn-outline-secondary" style="margin: 2rem;" href="{{ url_for('inasis_estudiante') }}">Ir</a>
             </div>
           </div>
         </div>
